@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Crédito Áureo</title>
+
+<style>
+body { font-family: Arial; background:#000; color:#FFD700; padding:20px; }
+input, select, button { width:100%; padding:12px; margin:6px 0; border-radius:8px; border:none; }
+button { background:#FFD700; color:#000; font-weight:bold; cursor:pointer; }
+pre { background:#111; padding:15px; border-radius:10px; white-space:pre-wrap; }
+</style>
+
+</head>
+<body>
+
+<h2>💰 Crédito Áureo</h2>
+
+<input id="nome" placeholder="Nome do cliente">
+<input id="valor" placeholder="Valor">
+<input id="parcelas" placeholder="Parcelas">
+<input id="juros" placeholder="Juros (%)">
+<input id="multa" placeholder="Multa diária">
+
+<select id="tipo">
+<option value="mensal">Mensal</option>
+<option value="semanal">Semanal</option>
+<option value="diario">Diário</option>
+</select>
+
+<button onclick="calcular()">Gerar Carnê</button>
+<button onclick="copiar()">📋 Copiar</button>
+<button onclick="whatsapp()">📲 Enviar WhatsApp</button>
+
+<pre id="resultado"></pre>
+
+<script>
+let textoFinal = "";
+
+function calcular(){
+
+let nome = document.getElementById("nome").value;
+let valor = parseFloat(document.getElementById("valor").value);
+let parcelas = parseInt(document.getElementById("parcelas").value);
+let juros = parseFloat(document.getElementById("juros").value);
+let multa = document.getElementById("multa").value;
+let tipo = document.getElementById("tipo").value;
+
+if(!nome || isNaN(valor) || isNaN(parcelas) || isNaN(juros)){
+  alert("Preencha tudo!");
+  return;
+}
+
+juros = juros / 100;
+
+let total = valor * (1 + juros);
+let parcela = total / parcelas;
+
+let base = new Date();
+
+let texto = `💰 CRÉDITO ÁUREO\n\n`;
+texto += `Cliente: ${nome}\n`;
+texto += `Valor: R$ ${valor}\n`;
+texto += `Total: R$ ${total.toFixed(2)}\n`;
+texto += `Parcela: R$ ${parcela.toFixed(2)}\n`;
+texto += `Multa: R$ ${multa}/dia\n\n`;
+
+for(let i=1;i<=parcelas;i++){
+ let venc = new Date(base);
+
+ if(tipo=="mensal") venc.setMonth(base.getMonth()+i);
+ else if(tipo=="semanal") venc.setDate(base.getDate()+7*i);
+ else if(tipo=="diario") venc.setDate(base.getDate()+i);
+
+ texto += `Parcela ${i} - R$ ${parcela.toFixed(2)}\n`;
+ texto += `${venc.toLocaleDateString()}\n\n`;
+}
+
+textoFinal = texto;
+
+document.getElementById("resultado").innerText = texto;
+}
+
+// COPIAR
+function copiar(){
+navigator.clipboard.writeText(textoFinal);
+alert("Copiado!");
+}
+
+// WHATSAPP
+function whatsapp(){
+let url = "https://wa.me/?text=" + encodeURIComponent(textoFinal);
+window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
